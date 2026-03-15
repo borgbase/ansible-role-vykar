@@ -1,0 +1,34 @@
+---
+- name: install | Set target architecture
+  ansible.builtin.set_fact:
+    vykar_target: >-
+      {{ 'aarch64-unknown-linux-musl' if ansible_architecture == 'aarch64'
+         else 'x86_64-unknown-linux-musl' }}
+
+- name: install | Download vykar
+  ansible.builtin.get_url:
+    url: "https://github.com/borgbase/vykar/releases/download/v{{ vykar_install_version }}/vykar-v{{ vykar_install_version }}-{{ vykar_target }}.tar.gz"
+    dest: "/tmp/vykar-v{{ vykar_install_version }}-{{ vykar_target }}.tar.gz"
+
+- name: install | Extract vykar binary
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: "/tmp/vykar-v{{ vykar_install_version }}-{{ vykar_target }}.tar.gz"
+    dest: "/tmp"
+    include:
+      - vykar
+
+- name: install | Install vykar binary
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/tmp/vykar"
+    dest: "{{ vykar_path }}"
+    mode: "0755"
+
+- name: install | Remove downloaded files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "/tmp/vykar-v{{ vykar_install_version }}-{{ vykar_target }}.tar.gz"
+    - "/tmp/vykar"
