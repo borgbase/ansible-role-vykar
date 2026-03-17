@@ -7,6 +7,7 @@
     fail_msg: "vykar_config must contain 'repositories' and 'schedule' keys"
 
 - name: Get vykar version
+  when: vykar_version == "latest"
   block:
     - name: Get latest vykar version from GitHub
       ansible.builtin.uri:
@@ -19,7 +20,6 @@
     - name: Set vykar install version
       ansible.builtin.set_fact:
         vykar_install_version: "{{ vykar_latest_release.json.tag_name | regex_replace('^v', '') }}"
-  when: vykar_version == "latest"
 
 - name: Set vykar install version (pinned)
   ansible.builtin.set_fact:
@@ -33,10 +33,19 @@
   changed_when: false
 
 - name: Install vykar
-  include_tasks: install.yml
+  ansible.builtin.include_tasks: install.yml
   when: >-
     vykar_version_check.rc != 0
     or vykar_install_version not in vykar_version_check.stdout
+
+- name: Get home directory for vykar user
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ vykar_user }}"
+
+- name: Set vykar home directory
+  ansible.builtin.set_fact:
+    vykar_home: "{{ getent_passwd[vykar_user][4] }}"
 
 - name: Create vykar config directory
   ansible.builtin.file:
@@ -62,6 +71,7 @@
 
 - name: Initialize vykar repository
   ansible.builtin.command: "{{ vykar_path }} init"
+  changed_when: true
   when: vykar_repo_check.rc != 0
 
 - name: Add systemd service for vykar daemon
@@ -69,7 +79,7 @@
     src: vykar-daemon.service.j2
     dest: /etc/systemd/system/vykar-daemon.service
     mode: "0644"
-  notify: systemd reload
+  notify: Systemd reload
 
 - name: Enable and start vykar daemon
   ansible.builtin.systemd:

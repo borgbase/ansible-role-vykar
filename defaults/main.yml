@@ -3,3 +3,5 @@ vykar_version: "latest"
 vykar_path: /usr/local/bin/vykar
 vykar_config_dir: /etc/vykar
 vykar_config: {}
+vykar_user: root
+vykar_readwrite_paths: []

@@ -59,6 +59,7 @@ journalctl -xefu vykar-daemon
           retention:
             keep_daily: 7
           schedule:
+            enabled: true
             every: "24h"
 ```
 
@@ -85,6 +86,7 @@ journalctl -xefu vykar-daemon
             keep_daily: 7
             keep_weekly: 4
           schedule:
+            enabled: true
             cron: "0 3 * * *"  # daily at 3:00 AM
 ```
 
@@ -110,6 +112,7 @@ journalctl -xefu vykar-daemon
           retention:
             keep_daily: 7
           schedule:
+            enabled: true
             every: "24h"
 ```
 

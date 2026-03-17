@@ -5,6 +5,9 @@ Wants=network-online.target
 
 [Service]
 Type=simple
+User={{ vykar_user }}
+Environment=HOME=%h
+ExecStartPre=+/bin/mkdir -p ~{{ vykar_user }}/.cache/vykar ~{{ vykar_user }}/.config/vykar
 ExecStart={{ vykar_path }} daemon
 Restart=on-failure
 RestartSec=60
@@ -15,8 +18,7 @@ ProtectHome=read-only
 PrivateTmp=true
 NoNewPrivileges=true
 PrivateDevices=true
-CacheDirectory=vykar
-ReadWritePaths={{ vykar_config_dir }}
+ReadWritePaths={{ vykar_config_dir }} {{ vykar_home }}/.cache/vykar {{ vykar_home }}/.config/vykar{{ ' ' + vykar_readwrite_paths | join(' ') if vykar_readwrite_paths else '' }}
 
 [Install]
 WantedBy=multi-user.target
