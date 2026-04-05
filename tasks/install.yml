@@ -8,8 +8,7 @@
 - name: install | Download vykar
   ansible.builtin.get_url:
     url: >-
-      https://github.com/borgbase/vykar/releases/download/
-      v{{ vykar_install_version }}/vykar-v{{ vykar_install_version }}-{{ vykar_target }}.tar.gz
+      https://github.com/borgbase/vykar/releases/download/v{{ vykar_install_version }}/vykar-v{{ vykar_install_version }}-{{ vykar_target }}.tar.gz
     dest: "/tmp/vykar-v{{ vykar_install_version }}-{{ vykar_target }}.tar.gz"
     mode: "0644"
 
